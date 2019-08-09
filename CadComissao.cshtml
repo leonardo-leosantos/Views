@@ -1,0 +1,473 @@
+﻿@model Cofin.RecebeMat.ModelsView.ComissaoRecebimento.ComissaoRecMatViewModel
+
+@{
+    ViewBag.Title = "Comissão de Recebimento de Materiais";
+}
+@*<html>*@
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <!--<title>Comissão de Recebimento de Materiais</title>-->
+    <!--<link href="~/Content/css/Comissao.css" rel="stylesheet" />-->
+    <!--CDN DATATABLE-->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" />
+
+    <style>
+
+        .botoes {
+            margin-left: 370px;
+        }
+
+        /*.comCad {
+           margin-top: 70px;
+        }*/
+
+        .linhatable {
+            background-color: steelblue;
+            color: white;
+        }
+
+        .box {
+            margin-top: 17px;
+        }
+
+        .titulo {
+            color: #3c8dbc;
+            font-variant: small-caps;
+            font-weight: bold;
+            font-size: 17px;
+            margin: 5px auto 5px 5px;
+        }
+
+        p {
+            margin: 5px auto 5px 5px;
+        }
+
+        input {
+            min-width: 17px;
+            min-height: 17px;
+            margin-right: 5px;
+        }
+
+        /*RECOLHER TABELA*/
+        /*.oficiais {
+            display: none;
+        }
+
+        .expandir {
+            cursor: pointer;
+        }*/
+
+    </style>
+</head>
+
+<body>
+    @*<div class="row">
+            <button type="button" id="novaCom" class="btn btn-primary">Nova Comissão</button>
+        </div>*@
+
+    <!--LISTA DE OFICIAIS-->
+    <div class="col-md-6 col-lg-6 col-sm-12">
+        <div>
+            <div class="box box-primary row">
+                <div>
+                    <strong class="titulo">Oficiais</strong><br>
+                    <p>
+                        Lista de oficiais disponíveis para formar uma nova comissão.
+                    </p>
+                </div>
+                <table id="tblOficiais" class="table oficiais">
+                    <thead class="thead">
+                        <tr class="linhatable">
+                            <th scope="col">RE</th>
+                            <th scope="col">Posto</th>
+                            <th scope="col">Nome</th>
+                            <th scope="col">UGE</th>
+                            <th scope="col">OPM</th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var oficial in Model.OficiaisComRecViewModel)
+                        {
+                            <tr class="tblOficial">
+                                <td class="oficialRE">@oficial.RE</td>
+                                <td class="oficialPosto">@oficial.PostoGraduacao</td>
+                                <td class="oficialNome">@oficial.Nome</td>
+                                <td class="oficialUge">@oficial.UgeCod</td>
+                                <td class="oficialOpm">@oficial.OpmCod</td>
+                                <td class="oficialBut">
+                                    <button type="button" id="@oficial.RE" class="btn btnSeleciona btn-primary btn-sm">
+                                        <i class="fas fa-arrow-alt-circle-right"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                @*<div class="box-footer text-center">
+                        <a class="expandir">Ver todos os oficiais</a>
+                    </div>*@
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-6 col-sm-12 row">
+
+        <!--OFICIAIS SELECIONADOS-->
+        <div>
+            <div class="box box-primary row">
+                <div>
+                    <strong class="titulo">Cadastrar Comissão</strong>
+                    <p>Oficiais selecionados para Comissão de Recebimento de Materiais.</p>
+                </div>
+
+                <table id="tabela" class="table">
+                    <thead class="thead">
+                        <tr class="linhatable">
+                            <th scope="col">RE</th>
+                            <th scope="col">Posto</th>
+                            <th scope="col">Nome</th>
+                            <th scope="col">UGE</th>
+                            <th scope="col">OPM</th>
+                            <th scope="col">Função</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tbody">  </tbody>
+
+                </table>
+                <div class="box-footer">
+                    Descrição da Comissão:
+                    <input type="text" id="descCom" class="form-control mr-sm-2" disabled important>
+                </div>
+            </div>
+        </div>
+
+        <!--BOTÃO-->
+        <div class="botoes">
+            <button type="button" id="cancelar" class="btn btn-secondary">Cancelar</button>
+            <button type="submit" id="salvar" class="btn btn-primary">Salvar</button>
+        </div>
+
+        <!--COMISSÕES CADASTRADAS-->
+        <div class="comCad">
+            <div class="box box-primary row">
+                <div>
+                    <strong class="titulo">Comissões</strong>
+                    <p>Comissões de recebimento de material cadastradas.</p>
+                </div>
+                <table id="tblComCad" class="table">
+                    <thead class="thead">
+                        <tr class="linhatable">
+                            @*<th scope="col">ID</th>*@
+                            <th scope="col">Descrição</th>
+                            <th scope="col">UGE</th>
+                            <th scope="col">OPM</th>
+                            <th scope="col">Opções</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < 3; i++)
+                        {
+                            <tr>
+                                @*<td>01</td>*@
+                                <td>Recebimento Material Escritório</td>
+                                <td>203000000</td>
+                                <td>180013</td>
+                                <td>
+                                    <button type="button" class="btn btn-secondary btn-sm">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn excluir btn-danger btn-sm">
+                                        <i class="fas fa-times-circle"></i>
+                                    </button>
+                                    <button type="button" class="btn excluir btn-primary btn-sm">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+@section scripts{
+    <!--CDN DATATABLE-->
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        //DATATABLE
+        $(document).ready(function () {
+            $('#tblOficiais').DataTable({
+                "language": {
+                    "lengthMenu": "Exibindo _MENU_ oficiais por página",
+                    "zeroRecords": "Nenhum oficial encontrado",
+                    "info": "Exibindo página _PAGE_ de _PAGES_",
+                    "infoEmpty": "Nenhum oficial disponível",
+                    "infoFiltered": "(filtrado de _MAX_ oficiais no total)",
+                    "search": "Buscar",
+                    "oPaginate": {
+                        "sNext": "Próximo",
+                        "sPrevious": "Anterior",
+                        "sFirst": "Primeiro",
+                        "sLast": "Último"
+                    }
+                },
+                "bLengthChange": false,
+                "iDisplayLength": 9,
+                "bAutoWidth": false,
+            });
+        });
+
+        $(document).ready(function () {
+            $('#tblComCad').DataTable({
+                "language": {
+                    "lengthMenu": "Exibindo _MENU_ oficiais por página",
+                    "zeroRecords": "Nenhum oficial encontrado",
+                    "info": "Exibindo página _PAGE_ de _PAGES_",
+                    "infoEmpty": "Nenhum oficial disponível",
+                    "infoFiltered": "(filtrado de _MAX_ oficiais no total)",
+                    "search": "Buscar",
+                    "oPaginate": {
+                        "sNext": "Próximo",
+                        "sPrevious": "Anterior",
+                        "sFirst": "Primeiro",
+                        "sLast": "Último"
+                    }
+                },
+                "bLengthChange": false,
+                "iDisplayLength": 5,
+                "bAutoWidth": false,
+            });
+        });
+
+        //EXPANDIR TABELA OFICIAIS
+        $(".expandir").click(function () {
+            $(".oficiais").slideToggle();
+        });
+
+        //ARRAY OFICIAL SELECIONADO
+        var onSelectOficial = function () {
+
+            let $divAtual = $(this).closest(".tblOficial");
+
+            let oficialCom = $divAtual.find("td").map(function (ind, td) {
+                var ret = {};
+                ret[ind] = $(td).text();
+                return ret;
+            }).get();
+
+            //PREENCHER TABELA OFICIAIS SELECIONADOS
+            var tr = document.createElement("tr");
+            tr.setAttribute("id", "tr");
+
+            var tbody = document.getElementById("tbody");
+            tbody.insertBefore(tr, tbody.childNodes[0]);
+
+            let num = oficialCom.length - 1;
+
+            for (var i = 0; i < num; i++) {
+
+                var oficial = oficialCom[i][i];
+                var td = document.createElement("td");
+                td.innerHTML = oficial;
+
+                document.getElementById("tr").appendChild(td);
+
+            }
+
+            //CRIAR SELECT COM AS FUNÇÕES
+            var funcao = document.createElement("select");
+            var funcoes = [
+                '---',
+                'Presidente',
+                'Secretario'
+            ];
+
+            funcoes.forEach(function (item) {
+                $(funcao).append('<option>' + item + '</option>');
+            });
+            document.getElementById("tr").appendChild(funcao);
+
+            //DESABILITAR BOTÃO
+            this.disabled = true;
+
+            //HABILITAR INPUT
+            var inputDesc = document.getElementById("descCom")
+            inputDesc.disabled = false;
+
+            //CONTAR LINHAS
+            var tabela = document.getElementById("tabela");
+            var linhas = tabela.getElementsByTagName('tr');
+            var qtdLinhas = linhas.length - 1;
+
+            if (qtdLinhas === 3) {
+
+                //RECONFIGURAR DATATABLE
+                $('#tblOficiais').DataTable({
+                    destroy: true,
+                    paging: false
+                });
+
+                var b = document.getElementsByClassName("btnSeleciona");
+                for (var i = 0; i < b.length; i++) {
+
+                    b[i].disabled = true;
+                }
+                //RECONFIGURAR DATATABLE
+                $('#tblOficiais').DataTable({
+                    destroy: true,
+                    paging: true,
+                    "language": {
+                        "lengthMenu": "Exibindo _MENU_ oficiais por página",
+                        "zeroRecords": "Nenhum oficial encontrado",
+                        "info": "Exibindo página _PAGE_ de _PAGES_",
+                        "infoEmpty": "Nenhum oficial disponível",
+                        "infoFiltered": "(filtrado de _MAX_ oficiais no total)",
+                        "search": "Buscar",
+                        "oPaginate": {
+                            "sNext": "Próximo",
+                            "sPrevious": "Anterior",
+                            "sFirst": "Primeiro",
+                            "sLast": "Último"
+                        }
+                    },
+                    "bLengthChange": false,
+                    "iDisplayLength": 9,
+                    "bAutoWidth": false,
+                });
+            }
+        }
+
+        //CANCELAR SELECAO
+        var onCancelar = function () {
+
+            var tbody = document.getElementById("tbody");
+            tbody.innerHTML = '';
+
+            //RECONFIGURAR DATATABLE
+            $('#tblOficiais').DataTable({
+                destroy: true,
+                paging: false
+            });
+
+            //HABILITAR BOTAO
+            var btnSeleciona = $(".btnSeleciona");
+            btnSeleciona.removeAttr('disabled');
+
+            //RECONFIGURAR DATATABLE
+            $('#tblOficiais').DataTable({
+                destroy: true,
+                paging: true,
+                "language": {
+                    "lengthMenu": "Exibindo _MENU_ oficiais por página",
+                    "zeroRecords": "Nenhum oficial encontrado",
+                    "info": "Exibindo página _PAGE_ de _PAGES_",
+                    "infoEmpty": "Nenhum oficial disponível",
+                    "infoFiltered": "(filtrado de _MAX_ oficiais no total)",
+                    "search": "Buscar",
+                    "oPaginate": {
+                        "sNext": "Próximo",
+                        "sPrevious": "Anterior",
+                        "sFirst": "Primeiro",
+                        "sLast": "Último"
+                    }
+                },
+                "bLengthChange": false,
+                "iDisplayLength": 9,
+                "bAutoWidth": false,
+            });
+
+            //DESABILITAR INPUT
+            var inputDesc = document.getElementById("descCom")
+            inputDesc.disabled = true;
+        }
+
+        //SALVAR COMISSAO
+        var onSalvar = function () {
+            var tabela = document.getElementById("tabela");
+            var linhas = tabela.getElementsByTagName('tr');
+            var qtdLinhas = linhas.length - 1;
+
+            var input = document.getElementById("descCom");
+            
+
+            toastr.options = {
+                "closeButton": true,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": false,
+                "positionClass": "toast-top-center",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+
+            if (qtdLinhas !== 3 | input === null) {
+                toastr.warning("SELECIONE 3 OFICIAIS E INSIRA A DESCRIÇÂO", "COFIN")
+            }
+
+            else {
+
+                toastr.success("COMISSÃO CADASTRADA COM SUCESSO", "COFIN")
+                var tbody = document.getElementById("tbody");
+                tbody.innerHTML = '';
+                var b = document.getElementsByClassName("btnSeleciona");
+
+                for (var i = 0; i < b.length; i++) {
+
+                    b[i].disabled = false;
+                }
+            }
+        }
+
+        //EXCLUIR COMISSAO CADASTRADA
+        var onExcluir = function () {
+            var tbody = document.getElementById("tbodyCom");
+            tbody.innerHTML = '';
+        }
+
+        //PREENCHER TABELA
+
+        ////var arrayOficiais = [
+        ////    { 0: "901236", },
+        ////    { 1: "TENENTE CORONEL PM" },
+        ////    { 2: "ELAINE ALMA LODI" },
+        ////    { 3: "180013" },
+        ////    { 4: "203000000,0" },
+        ////    { 5: "↵" },
+        ////];
+
+        ////var preencherTabela = function () {
+        ////    let a = arrayOficiais.length - 1;
+
+        ////    for (var i = 0; i < a; i++) {
+
+        ////        let re = arrayOficiais.filter((oficial) => {
+        ////            return oficial[i];
+        ////        })
+
+        ////        var td = document.createElement("td");
+        ////        td.innerHTML = JSON.stringify(re);
+        ////        document.getElementById("tr").appendChild(td);
+        ////    }
+        ////}
+
+        //EVENTO DO BOTÃO
+        $(document).on("click", '.btnSeleciona', onSelectOficial);
+        $(document).on("click", '#cancelar', onCancelar);
+        $(document).on("click", '#salvar', onSalvar);
+        $(document).on("click", '.excluir', onExcluir);
+
+    </script>
+}

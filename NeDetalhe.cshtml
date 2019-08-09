@@ -1,0 +1,855 @@
+﻿@model Cofin.RecebeMat.Models.NotaEmpenhoViewModel
+
+@{
+    ViewBag.Title = "Recebimento provisório";
+    ViewBag.Subtitle = "Recebimento de materiais";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+
+@section Scripts {
+    <script src="~/Infragistics/js/infragistics.loader.js"></script>
+    <script src="~/Infragistics/js/jquery-ui.min.js"></script>
+    <script src="~/Scripts/bootstrap-toggle.min.js"></script>
+    @if (ViewBag.ConfirmarQdeRec != null)
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                ConfirmarQdeRec();
+            });
+
+            function ConfirmarQdeRec() {
+                var url = '/Recebimento/ConfirmarQde/' + @ViewBag.ConfirmarQdeRec;
+                $("#modal").load(url, function () {
+                    $("#modal").modal();
+                })
+            }
+        </script>
+    }
+    else
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                BloqueiaCollapse = false;
+                idCollapse = 0;
+                erroTexto = "";
+                $(".ItemSeq").on("shown.bs.collapse", function () {
+                    if (BloqueiaCollapse == true) {
+                        $(idCollapse).collapse("hide");
+                        MsgToastr('ERRO', 'Erro', erroTexto);
+                        $(".QdeRec").prop('readonly', false);
+                        $(".VlUnitRec").prop('readonly', false);
+                    }
+                });
+                $(".ItemSeq").on("hidden.bs.collapse", function () {
+                    $(".QdeRec").prop('readonly', false);
+                    $(".VlUnitRec").prop('readonly', false);
+                });
+            });
+
+            function VerificarSaldoNE(Uge, Uo, NumeroNe, Item, seq, id) {
+                var Qde = $(".QdeRec")[seq].value;
+                var VlrUnit = $(".VlUnitRec")[seq].value;
+                AjaxNeDetalhe(Uge, Uo, NumeroNe, Item, Qde, VlrUnit).done(function (data) {
+                    if (data != "") {
+                        idCollapse = '#' + id;
+                        BloqueiaCollapse = true;
+                        $(idCollapse).collapse("hide");
+                        if (data == "QDEVLR") {
+                            erroTexto = "Os campos de quantidade recebida e valor unitário recebido devem ser preenchidos!";
+                        } else if (data == "VLR") {
+                            erroTexto = "O campo de valor unitário recebido deve ser preenchido!";
+                        } else {
+                            erroTexto = "O campo de quantidade recebida deve ser preenchido!";
+                        }
+                    }
+                    else {
+                        idCollapse = '';
+                        BloqueiaCollapse = false;
+                        erroTexto = "";
+                        $(".QdeRec").prop('readonly', true);
+                        $(".VlUnitRec").prop('readonly', true);
+                    }
+                });
+            };
+
+            function AjaxNeDetalhe(Uge, Uo, NumeroNe, Item, Qde, VlrUnit) {
+                return $.ajax({
+                    url: "@(Url.Action("VerSaldo", "Ne"))",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: {
+                        Uge: Uge,
+                        UO: Uo,
+                        NumeroNe: NumeroNe,
+                        ItemNe: Item,
+                        QdeRec: Qde,
+                        VlrUnit: VlrUnit
+                    }
+                });
+            };
+        </script>
+    }
+}
+
+<style>
+
+    div.margintop {
+        margin-top: 10px;
+    }
+
+    div.marginleft {
+        margin-left: 15px;
+    }
+
+    .tituloaba {
+        color: #3c8dbc;
+        font-variant: small-caps;
+        font-weight: bold;
+    }
+</style>
+
+<!--CRIANDO ABA-->
+<ul class="nav nav-tabs" id="myTab">
+    <li class="nav-item active">
+        <a class="nav-link active" href="#recebimento" data-toggle="tab"><span class="tituloaba">Recebimento</span></a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="#ne" data-toggle="tab"><span class="tituloaba">Nota de Empenho</span></a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="#nf" data-toggle="tab"><span class="tituloaba">Nota Fiscal</span></a>
+    </li>
+</ul>
+
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane active" id="recebimento">
+        @using (Html.BeginForm("ReceberMaterialProvisorio", "Recebimento", FormMethod.Post))
+        {
+            @Html.HiddenFor(i => i.Uo);
+            @Html.HiddenFor(i => i.Uge);
+            <div class="row">
+                <div class="box box-solid col-xs-12">
+                    @for (var n = 0; n < Model.ListaNF.Count(); n++)
+                    {
+                        <div class="box-header ">
+                            <div class="row">
+                                <div class="col-sm-12 col-md-3">
+                                    <b> NE: </b>@Html.DisplayFor(i => i.NumeroNe)<br>
+                                </div>
+                                <div class="col-sm-12 col-md-3">
+                                    <b> Status: </b>@Html.DisplayFor(i => i.StatusDescricao)<br>
+                                </div>
+                                <div class="col-sm-12 col-md-6">
+                                    <b>Fornecedor: </b>@Html.DisplayFor(i => i.CNPJCpfDesc)
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-12 col-md-3">
+                                    <b> Nota Fiscal: </b>
+                                    @if (string.IsNullOrEmpty(Model.ListaNF[n].NFCapa.NF))
+                                    {
+                                        @Html.TextBoxFor(i => i.ListaNF[@n].NFCapa.NF, new { @type = "number", @placeholder = "Nº NF", @class = "form-control" })
+                                        @Html.ValidationMessageFor(i => i.ListaNF[n].NFCapa.NF, "", new { @class = "text-danger" })
+                                    }
+                                    else
+                                    {
+                                        @*<input type="hidden" value="@Model.ListaNF[@n].NFCapa.NF" name="ListaNF[@n].NFCapa.NF" style="width:0px;border:0px;">*@
+                                        @Html.HiddenFor(i => i.ListaNF[n].NFCapa.NF);
+                                        @Html.DisplayFor(i => i.ListaNF[@n].NFCapa.NF)
+                                    }
+                                </div>
+
+                                <div class="col-sm-12 col-md-2">
+                                    <b> Data: </b>
+                                    @if (string.IsNullOrEmpty(Model.ListaNF[n].NFCapa.NF))
+                                    {
+                                        @Html.TextBoxFor(i => i.ListaNF[n].NFCapa.NFData, new { @type = "date", @placeholder = "Nº NF", @class = "form-control" })
+                                        @Html.ValidationMessageFor(i => i.ListaNF[n].NFCapa.NFData, "", new { @class = "text-danger" })
+                                    }
+                                    else
+                                    {
+                                        @*<input type="hidden" value="@Model.ListaNF[n].NFCapa.NFData" name="ListaNF[@n].NFCapa.NFData" style="width:0px;border:0px;">*@
+                                        @Html.HiddenFor(i => i.ListaNF[n].NFCapa.NFData);
+                                        @Html.DisplayFor(i => i.ListaNF[n].NFCapa.NFData)
+                                    }
+                                </div>
+                                <div class="col-sm-12 col-md-7" style="text-align:right;">
+                                    <label></label>
+                                    <p>Vlr Tot NE: R$ @Html.DisplayFor(i => i.Valor)</p>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-12 col-md-8" style="text-align:left;">
+                                    <br />
+                                    <p>Local de entrega: @ViewBag.LocalEntrega</p>
+                                </div>
+                                <div class="col-sm-12 col-md-4" style="text-align:right;">
+                                    <p>Vlr Tot NF: R$ @ViewBag.TotalNF</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="box-body">
+                            <div class="panel-group" id="accordion">
+                                <div class="panel panel-default ">
+                                    <div class="panel-heading">
+                                        <div class="row">
+                                            <div class="col-md-1"><b>Seq</b></div>
+                                            <div class="col-md-1"><b>SiaFisico</b></div>
+                                            <div class="col-md-2"><b>Descrição</b></div>
+                                            <div class="col-md-1"><b>Unidadade</b></div>
+                                            <div class="col-md-1"><b>Marca</b></div>
+                                            <div class="col-md-1"><b>Modelo</b></div>
+                                            <div class="col-md-1"><b>V.Unit.</b></div>
+                                            <div class="col-md-1"><b>Qtd NE</b></div>
+                                            <div class="col-md-1"><b>Vlr Unit NF</b></div>
+                                            <div class="col-md-1"><b>Qtd Rec NF</b></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @for (var k = 0; k < Model.ListaNF[n].Itens.Count(); k++)
+                                {
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <div class="row">
+                                                @Html.TextBoxFor(i => i.ListaNF[n].Itens[k].ItemKey.Sequencia, new { Style = "width:0px;border:0px;" })
+                                                <div class="col-md-1">@Html.DisplayFor(i => i.ListaNF[n].Itens[k].ItemKey.Sequencia)</div>
+                                                <div class="col-md-1">@Html.DisplayFor(i => i.ListaNF[n].Itens[k].ItemKey.Material)</div>
+                                                <div class="col-md-2 text-justify "><small>@Html.Raw(@Html.DisplayFor(i => i.ListaNF[n].Itens[k].dadosItem.descricao))</small></div>
+                                                <div class="col-md-1">@Html.DisplayFor(i => i.ListaNF[n].Itens[k].dadosItem.unidade)</div>
+                                                <div class="col-md-1">
+                                                    @Html.TextBoxFor(i => i.ListaNF[n].Itens[k].Marca, new { @placeholder = "Marca", @class = "form-control" })
+                                                    @Html.ValidationMessageFor(i => i.ListaNF[n].Itens[k].Marca, "", new { @class = "text-danger" })
+                                                </div>
+                                                <div class="col-md-1">
+                                                    @Html.TextBoxFor(i => i.ListaNF[n].Itens[k].Modelo, new { @placeholder = "Modelo", @class = "form-control" })
+                                                    @Html.ValidationMessageFor(i => i.ListaNF[n].Itens[k].Modelo, "", new { @class = "text-danger" })
+                                                </div>
+                                                <div class="col-md-1">@Html.DisplayFor(i => i.ListaNF[n].Itens[k].dadosItem.valorunitario)</div>
+                                                <div class="col-md-1">@Html.DisplayFor(i => i.ListaNF[n].Itens[k].dadosItem.qtdeitem)</div>
+                                                <div class="col-md-1">
+                                                    <input type="text" class="form-control VlUnitRec" placeholder="Vl Un NF" value="@Model.ListaNF[n].Itens[k].VlUnitRec" name="ListaNF[@n].Itens[@k].VlUnitRec">
+                                                    @*@Html.TextBoxFor(i => i.ListaNF[n].Itens[k].VlUnitRec, new { @placeholder = "Vl Un NF", @class = "form-control VlUnitRec" })
+                                                    @Html.ValidationMessageFor(i => i.ListaNF[n].Itens[k].VlUnitRec, "", new { @class = "text-danger" })*@
+                                                </div>
+                                                <div class="col-md-1">
+                                                    <input type="text" class="form-control QdeRec" placeholder="Qtd NF" value="@Model.ListaNF[n].Itens[k].QdeRec" name="ListaNF[@n].Itens[@k].QdeRec">
+                                                    @*@Html.TextBoxFor(i => i.ListaNF[n].Itens[k].QdeRec, new { @placeholder = "Qtd NF", @class = "form-control QdeRec" })
+                                                    @Html.ValidationMessageFor(i => i.ListaNF[n].Itens[k].QdeRec, "", new { @class = "text-danger" })*@
+                                                </div>
+                                                <div class="col-md-1">
+                                                    <a data-toggle="collapse" data-parent="#accordion" class="btn pull-right box-tools small-box-footer" href="#@Html.DisplayFor(i => i.ListaNF[n].Itens[k].ItemKey.Sequencia)"
+                                                       onclick="VerificarSaldoNE(@Model.Uge, @Model.Uo, '@Model.NumeroNe', @Model.ListaNF[n].Itens[k].ItemKey.Item, @k, '@Html.DisplayFor(i => i.ListaNF[n].Itens[k].ItemKey.Sequencia)');">
+                                                        <i class="fa  fa-list-ol"> Detalhar</i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="@Html.DisplayFor(i => i.ListaNF[n].Itens[k].ItemKey.Sequencia)" class="ItemSeq panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <b>Código</b>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <b>N. Série</b>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <b>Lote</b>
+                                                    </div>
+                                                </div>
+                                                @for (var j = 0; j < Model.ListaNF[n].Itens[k].ListaSeries.Count(); j++)
+                                                {
+                                                    @Html.TextBoxFor(i => i.ListaNF[n].Itens[k].ListaSeries[j].Sequencia, new { @type = "text", Style = "width:0px;border:0px;" })
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            @Html.TextBoxFor(i => i.ListaNF[n].Itens[k].ListaSeries[j].Codigo, new { @type = "text", @class = "form-control", @placeholder = "Código" })
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            @Html.TextBoxFor(i => i.ListaNF[n].Itens[k].ListaSeries[j].Serie, new { @type = "text", @class = "form-control", @placeholder = "Série" })
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            @Html.TextBoxFor(i => i.ListaNF[n].Itens[k].ListaSeries[j].Lote, new { @type = "text", @class = "form-control", @placeholder = "Lote" })
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <div class="checkbox">
+                                                                @Html.CheckBoxFor(i => i.ListaNF[n].Itens[k].ListaSeries[j].Conferido.Value)
+                                                                <label>
+                                                                    Conferido
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        @Html.TextArea("ListaNF[" + @n + "].Itens[" + @k + "].ObsRecSeries", Model.ListaNF[n].Itens[k].ObsRecSeries, new { @class = "form-control", @placeholder = "Observação do recebimento", @rows = "3" })
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <label></label>
+                                                        <button type="button" data-toggle="collapse" data-parent="#accordion" style="margin-top:20px" class="btn btn-default pull-left" href="#@Html.DisplayFor(i => i.ListaNF[n].Itens[k].ItemKey.Sequencia)">
+                                                            <i class="fa  fa-close"> Voltar</i>
+                                                        </button>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label></label>
+                                                        <button type="submit" value="SALVARSERIE-@k" name="Submit" style="margin-top:20px" class="salvar btn btn-default pull-right">
+                                                            <i class="fa fa-save"></i> Salvar
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-sm-1 col-md-3" style="text-align:left;">
+                    <button type="button" class="btn btn-default pull-left" style="margin-top: 20px;" onclick="location.href='@Url.Action("Provisorio", "Recebimento")'">
+                        <i class="fa fa-arrow-left"></i> Voltar
+                    </button>
+                    <button type="button" class="btn btn-default pull-left" style="margin-top: 20px; margin-left:5px;" onclick="location.href='@Url.Action("Estorno", "Recebimento", new {UgeCod=Model.Uge,NE=Model.NumeroNe})'">
+                        <i class="fa fa-arrow-left"></i> <span style="color:red;">Estorno</span>
+                    </button>
+                </div>
+
+                <div class="col-sm-1 col-md-6">
+                    <div class="clearfix">
+                        <form>
+                            <center>
+                                <div class="form-group">
+                                    <p style="margin-bottom: 0" for="exampleFormControlFile1">
+                                        <i class="fa  fa-upload margin-r5"></i> Enviar arquivo de nota Fiscal, xml, ou documento com seriais
+                                    </p>
+                                    <input type="file" class="form-control-file btn btn-warning" id="exampleFormControlFile1">
+                                </div>
+                            </center>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="col-sm-1 col-md-3" style="text-align:right;">
+                    <div class="clearfix">
+                        <button type="submit" value="NAOREC" name="Submit" style="margin-top:20px" class="btn btn-danger pull-left">
+                            <i class="fa fa-times"></i> Não Receber
+                        </button>
+                        <button type="submit" value="REC" name="Submit" style="margin-top:20px; margin-left:5px;" class="btn btn-success pull-left">
+                            <i class="fa fa-save"></i> Receber
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        }
+
+    </div>
+
+    <!--
+        ****************************************
+                  ABA NOTA DE EMPENHO
+        ****************************************
+    -->
+
+    <div class="tab-pane  " id="ne">
+
+        <div class="box box-solid row">
+
+
+            <div class="row margintop marginleft">
+                <div class=" col-sm-6">
+                    <b> Nota de empenho: </b>@Html.DisplayFor(i => i.NumeroNe) <span class="hidden-xs"> </span>
+                </div>
+                <div class="col-sm-6">
+                    <b>Emissão: </b>@Html.DisplayFor(i => i.DataEmissao)<span class="hidden-xs"> </span>
+                </div>
+            </div>
+
+            <div class="row margintop marginleft">
+
+                <div class=" col-sm-6">
+                    <b>UGE: </b>@Html.DisplayFor(i => i.Uge)<br>
+                </div>
+
+                <div class="  col-sm-6">
+                    <b>Gestão: </b>@Html.DisplayFor(i => i.Gestao)<br>
+                </div>
+            </div>
+
+            <div class="row marginleft ">
+                <div class="  col-sm-6">
+                    <b>CNPJ: </b>@Html.DisplayFor(i => i.CNPJCpf)<br>
+                </div>
+
+                <div class="  col-sm-6">
+                    <b>Credor: </b>@Html.DisplayFor(i => i.CNPJCpfDesc)<br>
+                </div>
+            </div>
+
+            <div class="row marginleft ">
+                <div class="  col-sm-12">
+                    <b>Endereco: </b>@ViewBag.Endereco<br>
+                </div>
+            </div>
+
+            <div class="row marginleft">
+                <div class="  col-sm-6 col-xs-4">
+                    <b>Cidade: </b>@ViewBag.Municipio<br>
+                </div>
+
+                <div class="  col-sm-2 col-xs-3">
+                    <b>UF: </b>@ViewBag.UF<br>
+                </div>
+
+                <div class="  col-sm-4 col-xs-5">
+                    <b>CEP: </b>@ViewBag.CEP<br>
+                </div>
+            </div>
+
+            <div class="row marginleft ">
+                <div class="  col-sm-12">
+                    <b>Origem do Material: </b>@Html.DisplayFor(i => i.OrigemMaterial)<span class="hidden-xs"> </span>
+                </div>
+            </div>
+
+            <div class="row margintop marginleft ">
+                <div class="  col-sm-6">
+                    <b>Evento: </b>@Html.DisplayFor(i => i.Evento)<br>
+                </div>
+
+                <div class="  col-sm-4 col-xs-6">
+                    <b> Natureza Despesa: </b>@Html.DisplayFor(i => i.NaturezaDespesa)<br>
+                </div>
+
+
+                <div class="  col-sm-2 col-xs-6">
+                    <b>Fonte: </b>@Html.DisplayFor(i => i.Fonte)<br>
+                </div>
+            </div>
+
+            <div class="row marginleft ">
+
+                <div class="  col-sm-6">
+                    <b>Programa de Trabalho: </b>@Html.DisplayFor(i => i.Pt)<br>
+                </div>
+
+
+                <div class="  col-sm-2 col-xs-4">
+                    <b>UGR: </b>@Html.DisplayFor(i => i.Ugo)<br>
+                </div>
+
+                <div class="  col-sm-2 col-xs-3">
+                    <b>UO: </b>@Html.DisplayFor(i => i.Uo)<br>
+                </div>
+
+
+                <div class="  col-sm-2 col-xs-5">
+                    <b> PI: </b>000.000.0100<span class="hidden-xs"></span>
+                </div>
+            </div>
+
+            <div class="row  margintop marginleft ">
+                <div class="  col-sm-6 col-xs-6">
+                    <b>N. Processo: </b>@Html.DisplayFor(i => i.NumeroProcesso)<br>
+                </div>
+                <div class="  col-sm-6 col-xs-6">
+                    <b>Acordo: </b>@Html.DisplayFor(i => i.Acordo)<br>
+                </div>
+            </div>
+
+            <div class="row marginleft ">
+                <div class="  col-sm-6">
+                    <b>Tipo de Empenho: </b>@Html.DisplayFor(i => i.TipoEmpenho)<br>
+                </div>
+                <div class="  col-sm-6">
+                    <b>REFER.LEGAL: </b>@Html.DisplayFor(i => i.ReferenciaLegal)<br>
+                </div>
+            </div>
+
+            <div class="row marginleft">
+                <div class="  col-sm-6 col-xs-6">
+                    <b>Licitação: </b>@Html.DisplayFor(i => i.Licitacao)<br>
+                </div>
+                <div class="  col-sm-6 col-xs-6">
+                    <b>Modalidade: </b>@Html.DisplayFor(i => i.Modalidade)<br>
+                </div>
+            </div>
+
+            <div class="row marginleft">
+                <div class="  col-sm-6">
+                    <b>Empenho Original: </b>@Html.DisplayFor(i => i.EmpenhoOriginal)<br>
+                </div>
+
+                <div class="  col-sm-3 col-xs-6">
+                    <b>N. Contrato: </b>@Html.DisplayFor(i => i.NumeroContrato)<br>
+                </div>
+
+                <div class="  col-sm-3 col-xs-6">
+                    <b>N.OC: </b>@Html.DisplayFor(i => i.Oc)<br>
+                </div>
+            </div>
+
+            <div class="row marginleft">
+                <div class="  col-sm-6 col-xs-6">
+                    <b>UGO: </b>@Html.DisplayFor(i => i.Ugo)&nbsp&nbsp<b>
+                </div>
+
+                <div class="  col-sm-6 col-xs-6">
+                    Plano Interno: </b>@Html.DisplayFor(i => i.PlanoInterno)<br>
+                </div>
+            </div>
+
+            <div class="row marginleft">
+                <div class="  col-sm-6">
+                    <b>Lançado Por: </b>@Html.DisplayFor(i => i.Lancadopor)<br>
+                </div>
+
+                <div class="  col-sm-6">
+                    @*<b>Data de Lançamento: </b>@Html.DisplayFor(i => i.DataHoraLancamento[0])<span class="hidden-xs"></span>*@
+                    <b>Data de Lançamento: </b>@Html.DisplayFor(i => i.DataHoraLancamento)<span class="hidden-xs"></span>
+                </div>
+            </div>
+
+            <div class="row margintop marginleft">
+                <div class="  col-sm-12">
+                    <b>Valor do Empenho: R$</b> @Html.DisplayFor(i => i.Valor) (@ViewBag.ValorExtenso)<span class="hidden-xs"></span>
+                </div>
+            </div>
+
+            <div class="col-sm-12  col-lg-12 ">
+                <div class="well well-sm well-lg ">
+                    <div class="row ">
+                        <div align="center"> <b>CRONOGRAMA</b></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row marginleft">
+                @foreach (var item in Model.CronogramaFinanceiro)
+                {
+                    if (item.Mes != 13)
+                    {
+                        <div class="  col-sm-2 col-xs-6" align="left">
+                            <b>@Html.DisplayFor(i => item.MesExtenso)</b><br> R$ @Html.DisplayFor(i => item.Valor)<br>
+                        </div>
+                    }
+                }
+            </div>
+
+            @foreach (var item in Model.Itens)
+            {
+                <div class="col-sm-12  col-lg-12 ">
+                    <div class="well well-sm well-lg ">
+                        <div class="row margintop">
+                            <div class=" col-sm-4 col-xs-6">
+                                <b>Sequência: </b> @Html.DisplayFor(i => item.ItemKey.Sequencia) <br>
+                            </div>
+
+                            <div class=" col-sm-4 col-xs-6">
+                                <b>Item: </b> @Html.DisplayFor(i => item.ItemKey.Material) <br>
+                            </div>
+
+                            <div class=" col-sm-4 col-xs-6">
+                                <b>Und Forn: </b>@Html.DisplayFor(i => item.Unidade) - @Html.DisplayFor(i => item.DescricaoUnidade)<br>
+                            </div>
+
+                            <div class=" col-sm-4 col-xs-6">
+                                <b>Quantidade: </b>@Html.DisplayFor(i => item.QtdeItem)<br>
+                            </div>
+
+                            <div class=" col-sm-4 col-xs-6">
+                                <b>Valor Unitário: </b>R$ @Html.DisplayFor(i => item.ValorUnitario) <br>
+                            </div>
+
+                            <div class=" col-sm-4 col-xs-6">
+                                <b>Preço Total: </b>R$ @Html.DisplayFor(i => item.PrecoTotal)<br><br>
+                            </div>
+
+                            <div class="  col-sm-12" align="center">
+                                <b>Descrição</b><br>
+                            </div>
+                            <div class="col-sm-12">
+                                @Html.DisplayFor(i => item.Descricao)
+                            </div><br>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+    </div>
+
+
+
+
+    <div class="tab-pane " id="nf">
+        <div class="box box-solid col-xs-12">
+            <div class="box-header">
+                <b> Nota Fiscal nº: </b> 123456
+            </div>
+            <div class="box-body" style="text-align:left">
+                <address>
+                    <NFe xmlns="http://www.portalfiscal.inf.br/nfe">
+                        <infNFe Id="NFe123456" versao="1.10">
+                            <ide>
+                                <cUF></cUF>
+                                <cNF></cNF>
+                                <natOp></natOp>
+                                <indPag></indPag>
+                                <mod></mod>
+                                <serie></serie>
+                                <nNF></nNF>
+                                <dEmi></dEmi>
+                                <dSaiEnt></dSaiEnt>
+                                <tpNF></tpNF>
+                                <cMunFG></cMunFG>
+                                <tpImp></tpImp>
+                                <tpEmis></tpEmis>
+                                <cDV></cDV>
+                                <tpAmb></tpAmb>
+                                <finNFe></finNFe>
+                                <procEmi></procEmi>
+                                <verProc></verProc>
+                            </ide>
+                            <emit>
+                                <CNPJ></CNPJ>
+                                <xNome></xNome>
+                                <xFant></xFant>
+                                <enderEmit>
+                                    <xLgr></xLgr>
+                                    <nro></nro>
+                                    <xCpl></xCpl>
+                                    <xBairro></xBairro>
+                                    <cMun></cMun>
+                                    <xMun></xMun>
+                                    <UF></UF>
+                                    <CEP></CEP>
+                                    <cPais></cPais>
+                                    <xPais></xPais>
+                                    <fone></fone>
+                                </enderEmit>
+                                <IE></IE>
+                            </emit>
+                            <dest>
+                                <CNPJ></CNPJ>
+                                <xNome></xNome>
+                                <enderDest>
+                                    <xLgr></xLgr>
+                                    <nro></nro>
+                                    <xCpl></xCpl>
+                                    <xBairro></xBairro>
+                                    <cMun></cMun>
+                                    <xMun></xMun>
+                                    <UF></UF>
+                                    <CEP></CEP>
+                                    <cPais></cPais>
+                                    <xPais></xPais>
+                                    <fone></fone>
+                                </enderDest>
+                                <IE></IE>
+                            </dest>
+                            <retirada>
+                                <CNPJ></CNPJ>
+                                <xLgr></xLgr>
+                                <nro></nro>
+                                <xCpl></xCpl>
+                                <xBairro></xBairro>
+                                <cMun></cMun>
+                                <xMun></xMun>
+                                <UF></UF>
+                            </retirada>
+                            <entrega>
+                                <CNPJ></CNPJ>
+                                <xLgr></xLgr>
+                                <nro></nro>
+                                <xCpl></xCpl>
+                                <xBairro></xBairro>
+                                <cMun></cMun>
+                                <xMun></xMun>
+                                <UF></UF>
+                            </entrega>
+                            <det nItem="1">
+                                <prod>
+                                    <cProd></cProd>
+                                    <cEAN></cEAN>
+                                    <xProd></xProd>
+                                    <CFOP></CFOP>
+                                    <uCom></uCom>
+                                    <qCom></qCom>
+                                    <vUnCom></vUnCom>
+                                    <vProd></vProd>
+                                    <cEANTrib></cEANTrib>
+                                    <uTrib></uTrib>
+                                    <qTrib></qTrib>
+                                    <vUnTrib></vUnTrib>
+                                </prod>
+                                <imposto>
+                                    <ICMS>
+                                        <ICMS00>
+                                            <orig></orig>
+                                            <CST></CST>
+                                            <modBC></modBC>
+                                            <vBC></vBC>
+                                            <pICMS></pICMS>
+                                            <vICMS></vICMS>
+                                        </ICMS00>
+                                    </ICMS>
+                                    <PIS>
+                                        <PISAliq>
+                                            <CST></CST>
+                                            <vBC></vBC>
+                                            <pPIS></pPIS>
+                                            <vPIS></vPIS>
+                                        </PISAliq>
+                                    </PIS>
+                                    <COFINS>
+                                        <COFINSAliq>
+                                            <CST></CST>
+                                            <vBC></vBC>
+                                            <pCOFINS></pCOFINS>
+                                            <vCOFINS></vCOFINS>
+                                        </COFINSAliq>
+                                    </COFINS>
+                                </imposto>
+                            </det>
+                            <det nItem="2">
+                                <prod>
+                                    <cProd></cProd>
+                                    <cEAN></cEAN>
+                                    <xProd></xProd>
+                                    <CFOP></CFOP>
+                                    <uCom></uCom>
+                                    <qCom></qCom>
+                                    <vUnCom></vUnCom>
+                                    <vProd></vProd>
+                                    <cEANTrib></cEANTrib>
+                                    <uTrib></uTrib>
+                                    <qTrib></qTrib>
+                                    <vUnTrib></vUnTrib>
+                                </prod>
+                                <imposto>
+                                    <ICMS>
+                                        <ICMS00>
+                                            <orig></orig>
+                                            <CST></CST>
+                                            <modBC></modBC>
+                                            <vBC></vBC>
+                                            <pICMS></pICMS>
+                                            <vICMS></vICMS>
+                                        </ICMS00>
+                                    </ICMS>
+                                    <PIS>
+                                        <PISAliq>
+                                            <CST></CST>
+                                            <vBC></vBC>
+                                            <pPIS></pPIS>
+                                            <vPIS></vPIS>
+                                        </PISAliq>
+                                    </PIS>
+                                    <COFINS>
+                                        <COFINSAliq>
+                                            <CST></CST>
+                                            <vBC></vBC>
+                                            <pCOFINS></pCOFINS>
+                                            <vCOFINS></vCOFINS>
+                                        </COFINSAliq>
+                                    </COFINS>
+                                </imposto>
+                            </det>
+                            <total>
+                                <ICMSTot>
+                                    <vBC></vBC>
+                                    <vICMS></vICMS>
+                                    <vBCST></vBCST>
+                                    <vST></vST>
+                                    <vProd></vProd>
+                                    <vFrete></vFrete>
+                                    <vSeg></vSeg>
+                                    <vDesc></vDesc>
+                                    <vII></vII>
+                                    <vIPI></vIPI>
+                                    <vPIS></vPIS>
+                                    <vCOFINS></vCOFINS>
+                                    <vOutro></vOutro>
+                                    <vNF></vNF>
+                                </ICMSTot>
+                            </total>
+                            <transp>
+                                <modFrete></modFrete>
+                                <transporta>
+                                    <CNPJ></CNPJ>
+                                    <xNome></xNome>
+                                    <IE></IE>
+                                    <xEnder></xEnder>
+                                    <xMun></xMun>
+                                    <UF></UF>
+                                </transporta>
+                                <veicTransp>
+                                    <placa></placa>
+                                    <UF></UF>
+                                    <RNTC></RNTC>
+                                </veicTransp>
+                                <reboque>
+                                    <placa></placa>
+                                    <UF></UF>
+                                    <RNTC></RNTC>
+                                </reboque>
+                                <vol>
+                                    <qVol></qVol>
+                                    <esp></esp>
+                                    <marca></marca>
+                                    <nVol></nVol>
+                                    <pesoL></pesoL>
+                                    <pesoB></pesoB>
+                                    <lacres>
+                                        <nLacre></nLacre>
+                                    </lacres>
+                                </vol>
+                            </transp>
+                            <infAdic>
+                                <infAdFisco></infAdFisco>
+                            </infAdic>
+                        </infNFe>
+                        <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+                            <SignedInfo>
+                                <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"></CanonicalizationMethod>
+                                <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"></SignatureMethod>
+                                <Reference URI="#NFe35080599999090910270550010000000015180051273">
+                                    <Transforms>
+                                        <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"></Transform>
+                                        <Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"></Transform>
+                                    </Transforms>
+                                    <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"></DigestMethod>
+                                    <DigestValue></DigestValue>
+                                </Reference>
+                            </SignedInfo>
+                            <SignatureValue></SignatureValue>
+                            <KeyInfo>
+                                <X509Data>
+                                    <X509Certificate></X509Certificate>
+                                </X509Data>
+                            </KeyInfo>
+                        </Signature>
+                    </NFe>
+                </address>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+
+
+

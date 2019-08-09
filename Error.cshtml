@@ -1,0 +1,27 @@
+﻿@model System.Web.Mvc.HandleErrorInfo
+
+@{
+    ViewBag.Title = "Error";
+}
+
+<div class=" col-sm-4 col-xs-12">
+    <img src="..\..\Images\icone_erro1.png" class="img-fluid" alt="Responsive image">
+</div><br>
+
+<div class="col-sm-8">
+    <h1 class="text-primary"><font size="40"><b>Cofin Suporte</b></font></h1>
+    <h2 class="text-primary">Ocorreu uma falha durante sua requisição.<br>Clique no logotipo do cabeçalho para retornar ao menu principal ou clique em 'Detalhes' e contate o suporte.</h2>
+
+    <div class="pre-spoiler">
+        <input id="xs" value="Detalhes " onclick="if (this.parentNode.parentNode.getElementsByTagName('div')[1].getElementsByTagName('div')[0].style.display != '') { this.parentNode.parentNode.getElementsByTagName('div')[1].getElementsByTagName('div')[0].style.display = '';this.innerText = ''; this.value = 'Ocultar'; } else { this.parentNode.parentNode.getElementsByTagName('div')[1].getElementsByTagName('div')[0].style.display = 'none'; this.value = 'Detalhes';}" type="button" class="btn btn-link">
+    </div>
+    <div  class="box-body">
+        <div class="spoiler col-xs-11" style="display: none; text-align:left">
+            <h2 class="text-primary"><b>Tire uma cópia desta tela e envie para o suporte.</b></h2>
+
+            <p><b>Mensagem:</b> @Model.Exception.Message</p>
+            <p><b>Stack:</b> @Model.Exception.StackTrace</p>
+        </div><br/>
+    </div>
+</div>
+

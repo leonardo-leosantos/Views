@@ -1,0 +1,375 @@
+﻿@model Cofin.RecebeMat.ModelsView.NotaFiscalNe
+
+@{
+    ViewBag.Title = "Nota Fiscal";
+}
+<head>
+    <link href="~/Content/css/Conciliar.css" rel="stylesheet" />
+</head>
+
+<body>
+    <!--TITULO-->
+    <div class="box box-solid row">
+        <div class="col-lg-12 margintop">
+            <h1><b>Conciliar Nota Fiscal e Siafisico</b></h1>
+        </div>
+
+        <div class="marginleft">
+            <p>Conciliar os itens da Nota Fiscal com o código Siafisico presente na Nota de Empenho.</p>
+        </div>
+    </div>
+    <!--CABEÇALHO NOTA DE EMPENHO-->
+    <div class="box box-solid row">
+        <div class="col-lg-8 margintop">
+            <h1>Nota Empenho</h1>
+        </div>
+
+        <div class=" col-lg-4 margintop">
+            <button id="lupa" class="btn btn-primary btn-sm" data-toggle="collapse" data-target="#exibir"><i class="fa fa-plus"></i> </button>
+        </div>
+
+        <div class="row marginleft">
+            <div class="col-lg-6">
+                <b> Nota de empenho: </b>@Html.DisplayFor(i => i.notaEmpenho.NumeroNe) <span class="hidden-xs"> </span>
+            </div>
+            <div class="col-lg-6">
+                <b>Emissão: </b>@Html.DisplayFor(i => i.notaEmpenho.Emissao)<span class="hidden-xs"> </span>
+            </div>
+        </div>
+
+        <div class="row marginleft">
+            <div class=" col-lg-6">
+                <b>UGE: </b>@Html.DisplayFor(i => i.notaEmpenho.UGE)<br>
+            </div>
+
+            <div class="  col-lg-6">
+                <b>Gestão: </b>0000@*@Html.DisplayFor(i => i.notaEmpenho.)*@<br>
+            </div>
+        </div>
+
+        <div class="row marginleft marginbottom">
+            <div class="col-lg-6">
+                <b>CNPJ: </b>@Html.DisplayFor(i => i.notaEmpenho.EmpresaCnpj)<br>
+            </div>
+            <div class="col-lg-6">
+                <b> Natureza Despesa: </b>@Html.DisplayFor(i => i.notaEmpenho.NaturezaDespesa)<br>
+            </div>
+        </div>
+
+        <!--NE campos ocultos-->
+        <div id="exibir" class="collapse">
+
+            <div class="row marginleft ">
+                <div class="col-lg-12">
+                    <b>Endereco: </b>@ViewBag.Endereco<br>
+                </div>
+            </div>
+
+            <div class="row marginleft">
+                <div class="  col-sm-6 col-xs-4">
+                    <b>Cidade: </b>@ViewBag.Municipio<br>
+                </div>
+
+                <div class="  col-sm-2 col-xs-3">
+                    <b>UF: </b>@ViewBag.UF<br>
+                </div>
+
+                <div class="  col-sm-4 col-xs-5">
+                    <b>CEP: </b>@ViewBag.CEP<br>
+                </div>
+            </div>
+
+            <div class="row marginleft ">
+                <div class="  col-sm-12">
+                    <b>Origem do Material: </b>@Html.DisplayFor(i => i.notaEmpenho.Empresa)<span class="hidden-xs"> </span>
+                </div>
+            </div>
+
+            <div class="row marginleft ">
+                <div class="  col-sm-6">
+                    <b>Evento: </b>0000<br>
+                </div>
+                <div class="  col-sm-6">
+                    <b>Credor: </b>@Html.DisplayFor(i => i.notaEmpenho.NomeEmpresaResumido)<br>
+                </div>
+
+                <div class="  col-sm-2 col-xs-6">
+                    <b>Fonte: </b>@Html.DisplayFor(i => i.notaEmpenho.Fonte)<br>
+                </div>
+            </div>
+
+            <div class="row marginleft ">
+
+                <div class="  col-sm-6">
+                    <b>Programa de Trabalho: </b>@Html.DisplayFor(i => i.notaEmpenho.PTRES)<br>
+                </div>
+
+
+                <div class="  col-sm-2 col-xs-4">
+                    <b>UGR: </b>@*@Html.DisplayFor(i => i.notaEmpenho.)*@<br>
+                </div>
+
+                <div class="  col-sm-2 col-xs-3">
+                    <b>UO: </b>@*@Html.DisplayFor(i => i.Uo)*@<br>
+                </div>
+
+
+                <div class="  col-sm-2 col-xs-5">
+                    <b> PI: </b>000.000.0100<span class="hidden-xs"></span>
+                </div>
+            </div>
+
+            <div class="row marginleft ">
+                <div class="  col-sm-6 col-xs-6">
+                    <b>N. Processo: </b>@Html.DisplayFor(i => i.notaEmpenho.Processo)<br>
+                </div>
+                <div class="  col-sm-6 col-xs-6">
+                    <b>Acordo: </b>00000@*@Html.DisplayFor(i => i.notaEmpenho.)*@<br>
+                </div>
+            </div>
+
+            <div class="row marginleft ">
+                <div class="  col-sm-6">
+                    <b>Tipo de Empenho: </b>@Html.DisplayFor(i => i.notaEmpenho.Identificador)<br>
+                </div>
+                <div class="  col-sm-6">
+                    <b>REFER.LEGAL: </b>@*@Html.DisplayFor(i => i.notaEmpenho.)*@<br>
+                </div>
+            </div>
+
+            <div class="row marginleft">
+                <div class="  col-sm-6 col-xs-6">
+                    <b>Licitação: </b>000@*@Html.DisplayFor(i => i.notaEmpenho.licitação)*@<br>
+                </div>
+                <div class="  col-sm-6 col-xs-6">
+                    <b>Modalidade: </b>@*@Html.DisplayFor(i => i.Modalidade)*@<br>
+
+                </div>
+            </div>
+
+            <div class="row marginleft">
+                <div class="  col-sm-6">
+                    <b>Empenho Original: </b>@*@Html.DisplayFor(i => i.EmpenhoOriginal)*@<br>
+                </div>
+
+                <div class="  col-sm-3 col-xs-6">
+                    <b>N. Contrato: </b>@*@Html.DisplayFor(i => i.NumeroContrato)*@<br>
+                </div>
+
+                <div class="  col-sm-3 col-xs-6">
+                    <b>N.OC: </b>@*@Html.DisplayFor(i => i.Oc)*@<br>
+                </div>
+            </div>
+
+            <div class="row marginleft">
+                <div class="  col-sm-6 col-xs-6">
+                    <b>UGO: </b>@*@Html.DisplayFor(i => i.Ugo)&nbsp&nbsp*@<br>
+                </div>
+
+                <div class="  col-sm-6 col-xs-6">
+                    <b> Plano Interno: </b>@*@Html.DisplayFor(i => i.PlanoInterno)*@<br>
+                </div>
+            </div>
+
+            <div class="row marginleft">
+                <div class="  col-sm-6">
+                    <b>Lançado Por: </b>@*@Html.DisplayFor(i => i.Lancadopor)*@<br>
+                </div>
+
+                <div class="  col-sm-6">
+                    <b>Data de Lançamento: </b>00/00/001055 @*@Html.DisplayFor(i => i.DataHoraLancamento[0])*@<span class="hidden-xs"></span>
+                </div>
+            </div>
+
+            <div class="row marginleft marginbottom">
+                <div class="  col-sm-12">
+                    <b>Valor do Empenho: R$</b> @*@Html.DisplayFor(i => i.notaEmpenho.Identificador) (@ViewBag.ValorExtenso)*@<span class="hidden-xs"></span>
+                </div>
+            </div>
+
+            <!--ITENS NE-->
+
+
+        </div>
+    </div>
+
+
+    <!--CABEÇALHO NOTA FISCAL-->
+    <div class="box box-solid row">
+        <div class="col-lg-12 margintop">
+            <h1>Nota Fiscal</h1>
+        </div>
+
+        <div class="row marginleft">
+            <div class=" col-sm-4">
+                <b>CNPJ: </b>@Html.DisplayFor(i => i.notaCabecalho.cnpj) <span class="hidden-xs"> </span>
+            </div>
+            <div class=" col-sm-4">
+                <b>Razão Social: </b>@Html.DisplayFor(i => i.notaCabecalho.razaoSocial) <span class="hidden-xs"> </span>
+            </div>
+            <div class=" col-sm-4">
+                <b>Nome Fantasia: </b>@Html.DisplayFor(i => i.notaCabecalho.nomeFantasia) <span class="hidden-xs"> </span>
+            </div>
+        </div>
+
+        <div class="row marginleft">
+            <div class=" col-sm-4">
+                <b>Inscrição Estadual: </b>@Html.DisplayFor(i => i.notaCabecalho.inscEstd) <span class="hidden-xs"> </span>
+            </div>
+            <div class=" col-sm-4">
+                <b>Série: </b>@Html.DisplayFor(i => i.notaCabecalho.serie) <span class="hidden-xs"> </span>
+            </div>
+            <div class=" col-sm-4">
+                <b>Número: </b>@Html.DisplayFor(i => i.notaCabecalho.numero) <span class="hidden-xs"> </span>
+            </div>
+        </div>
+        <div class="row marginleft marginbottom">
+            <div class=" col-sm-4">
+                <b>Data/Hora Emissão: </b>@Html.DisplayFor(i => i.notaCabecalho.dhEmissao) <span class="hidden-xs"> </span>
+            </div>
+            <div class=" col-sm-4">
+                <b>Data/Hora Saída-Entrada: </b>@Html.DisplayFor(i => i.notaCabecalho.dhSaiEnt) <span class="hidden-xs"> </span>
+            </div>
+            <div class=" col-sm-4">
+                <b>Natureza de Operação: </b>@Html.DisplayFor(i => i.notaCabecalho.naturOp) <span class="hidden-xs"> </span>
+            </div>
+        </div>
+
+        <!--Campos Nota Fiscal-->
+        @foreach (var itens in Model.NotaItem)
+        {
+            <div class="margintop marginbottom">
+                <div class="well well-sm well-lg margem">
+                    <div class="row">
+
+                        <div class="col-md-2 col-xs-12">
+                            <label class="title">Descrição</label><br>
+                            <span class="edit">
+                                @itens.descricao
+                            </span>
+                        </div>
+
+                        <div class="col-md-2 col-xs-6">
+                            <label class="title"><font style="vertical-align: inherit;">Quantidade</font></label><br>
+                            <span class="edit">
+                                @itens.quantidade
+                            </span>
+                        </div>
+
+                        <div class="col-md-2 col-xs-6">
+                            <label class="title"><font style="vertical-align: inherit;">Unidade</font></label><br>
+                            <span class="edit">
+                                @itens.unidade
+                            </span>
+                        </div>
+
+                        <div class="col-md-2 col-xs-6">
+                            <label class="title"> <font style="vertical-align: inherit;">Valor Unitário</font></label><br>
+                            <span class="edit">
+                                @itens.valorUnit
+                            </span>
+                        </div>
+
+                        <div class="col-md-2 col-xs-6">
+                            <label class="title"> <font style="vertical-align: inherit;">Valor Total</font></label><br>
+                            <span class="edit">
+                                @itens.valorTotal
+                            </span>
+                            <br>
+                        </div>
+
+                        <!--COMBOBOX AUTOCOMPLETE-->
+                        <div class="col-md-2">
+                            <label class="my-1 mr-2">SIAFISICO</label>
+
+                            <input class="inputSiafisico" name="sia[]" list="codSiafisico" autocomplete=off placeholder="- Código Siafisico -" style="width:150px">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!--LISTA-->
+        <datalist id="codSiafisico"></datalist>
+
+        <!--BOTÃO-->
+        <div class="botao marginbottom">
+            <input class="btn btn-primary" type="button" id="botao" value="Salvar" onclick="Salvar()">
+            <input class="btn btn-secondary" type="button" id="botaoClear" value="Limpar" onclick="Limpar()">
+        </div>
+    </div>
+</body>
+
+@section scripts{
+    <!--<script type="text/javascript" src="~/Content/js/conciliar.js"></script>-->
+<script>
+    var list = JSON.parse('@Html.Raw(ViewBag.Lista)');
+
+    //CARREGAR LISTA
+    var listComponent = () => {
+    return atualizarLista().join('');
+    }
+
+    //ARRAY SELECIONADOS
+    function siafisicoSelecionados() {
+    let tmp = $('.inputSiafisico').map(function () { return parseInt($(this).val()); }).get();
+
+    tmp = tmp.filter((x) => {
+    return !isNaN(x);
+    })
+
+    return tmp;
+    }
+
+    function atualizarLista() {
+
+    var listtmp = [];
+
+    for (var i in list) {
+    console.log("Montando Listar")
+    if ($.inArray(list[i].intvalue, siafisicoSelecionados()) == -1) {
+
+    listtmp.push(
+    "<option class='opt item-" + parseInt(list[i].svalue) +
+                "' value=" + list[i].svalue + ">
+        Descrição: " + list[i].svalue +
+        " " + list[i].descricao + "
+    </option>");
+    }
+    }
+
+    return listtmp;
+    }
+
+    $(function () {
+
+    var listInput = listComponent();
+    var el = document.getElementById("codSiafisico");
+    el.innerHTML = listInput;
+
+    //REMOVER
+    $('.inputSiafisico').blur(function () {
+
+    let el = document.getElementById("codSiafisico");
+    el.innerHTML = listComponent();
+    });
+
+    //BOTÃO EXPANDIR
+    $("#lupa").click(function () {
+
+    var $obji = $(this).find("i");
+
+    if (($obji).hasClass("fa fa-plus") == true) {
+
+    $obji.removeClass("fa fa-plus");
+    $obji.addClass("fa fa-minus");
+    }
+    else {
+    $obji.removeClass("fa fa-minus");
+    $obji.addClass("fa fa-plus");
+    }
+    });
+        });
+</script>
+}
