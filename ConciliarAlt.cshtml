@@ -1,11 +1,6 @@
-﻿@model Cofin.RecebeMat.ModelsView.NotaFiscalNe
-
-@{
-
-    ViewBag.Title = "Nota Fiscal";
-
-
-}
+﻿<head>
+<title>Conciliar Alternativo: página opcional</title>
+</head>
 <style>
 
     .title {
@@ -345,8 +340,7 @@
     </div>
 </body>
 
-@section scripts{
-    <script>
+<script>
 
         var list = JSON.parse('@Html.Raw(ViewBag.Lista)');
 
@@ -372,23 +366,7 @@
                 intvalue: 384739
             }
         ];
-
-        //var listFilter = () => {
-        //    return list.filter((item) => {
-        //        //return console.dir(item);
-        //        console.log("passei pelo list filter");
-        //        return !siafisicoSelecionados().includes(parseInt(item.svalue));
-        //    })
-        //}
-
-        //var listComponent = (list) => {
-        //    return list.map((item) => {
-        //        return (
-        //            '<option value=' + item.svalue + '> Descrição: ' + item.svalue + '  ' + item.descricao + '</option>'
-        //        )
-        //    }).join('')
-        //}
-
+        
         var listComponent = () => {
             return atualizarLista().join('');
         }
@@ -404,12 +382,6 @@
             return tmp;
         }
 
-        //var filtered = list.filter(function (item) {
-        //    if ($.inArray(item.intvalue, siafisicoSelecionados()) !== -1) {
-        //        return item
-        //    }
-        //});
-
         function atualizarLista() {
 
             var listtmp = [];
@@ -422,8 +394,6 @@
                         "<option class='opt item-" + parseInt(list[i].svalue) +
                         "' value=" + list[i].svalue + "> Descrição: " + list[i].svalue +
                         " " + list[i].descricao + "</option>");
-
-                    //listtmp.push("<option class='opt item-" + parseInt(list[i].svalue) + "' value=" + list[i].svalue + "> Descrição: " + list[i].svalue + " " + list[i].descricao + "</option>")
                 }
             }
             return listtmp;
@@ -437,12 +407,6 @@
 
             //REMOVER
             $('.inputSiafisico').blur(function () {
-
-                //    var val = parseInt($(this).val());
-                //    console.log(val);
-                //    if (val > 0) {
-                //        $('.item-' + val).eq(0).remove();
-                //    }
 
                 let el = document.getElementById("codSiafisico");
                 el.innerHTML = listComponent();
@@ -465,5 +429,4 @@
                 }
             });
         });
-    </script>
-}
+</script>

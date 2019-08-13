@@ -1,10 +1,6 @@
-﻿@model Cofin.RecebeMat.ModelsView.ComissaoRecebimento.ComissaoRecMatViewModel
-
-@{
-    ViewBag.Title = "Comissão de Recebimento de Materiais";
-}
-@*<html>*@
+﻿<html>
 <head>
+    <title>Comissão de Recebimento de Materiais</title>
     <meta name="viewport" content="width=device-width" />
     <!--<title>Comissão de Recebimento de Materiais</title>-->
     <!--<link href="~/Content/css/Comissao.css" rel="stylesheet" />-->
@@ -16,10 +12,6 @@
         .botoes {
             margin-left: 370px;
         }
-
-        /*.comCad {
-           margin-top: 70px;
-        }*/
 
         .linhatable {
             background-color: steelblue;
@@ -61,9 +53,9 @@
 </head>
 
 <body>
-    @*<div class="row">
+    <div class="row">
             <button type="button" id="novaCom" class="btn btn-primary">Nova Comissão</button>
-        </div>*@
+        </div>
 
     <!--LISTA DE OFICIAIS-->
     <div class="col-md-6 col-lg-6 col-sm-12">
@@ -105,9 +97,9 @@
                     </tbody>
                 </table>
 
-                @*<div class="box-footer text-center">
+                <div class="box-footer text-center">
                         <a class="expandir">Ver todos os oficiais</a>
-                    </div>*@
+                    </div>
             </div>
         </div>
     </div>
@@ -160,7 +152,7 @@
                 <table id="tblComCad" class="table">
                     <thead class="thead">
                         <tr class="linhatable">
-                            @*<th scope="col">ID</th>*@
+                            <th scope="col">ID</th>
                             <th scope="col">Descrição</th>
                             <th scope="col">UGE</th>
                             <th scope="col">OPM</th>
@@ -171,7 +163,7 @@
                         @for (int i = 0; i < 3; i++)
                         {
                             <tr>
-                                @*<td>01</td>*@
+                                <td>01</td>
                                 <td>Recebimento Material Escritório</td>
                                 <td>203000000</td>
                                 <td>180013</td>
@@ -194,9 +186,9 @@
         </div>
     </div>
 </body>
-@section scripts{
-    <!--CDN DATATABLE-->
-    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+
+<!--CDN DATATABLE-->
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 
     <script>
         //DATATABLE
@@ -468,6 +460,4 @@
         $(document).on("click", '#cancelar', onCancelar);
         $(document).on("click", '#salvar', onSalvar);
         $(document).on("click", '.excluir', onExcluir);
-
-    </script>
-}
+</script>

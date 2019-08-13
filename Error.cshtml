@@ -1,8 +1,6 @@
-﻿@model System.Web.Mvc.HandleErrorInfo
-
-@{
-    ViewBag.Title = "Error";
-}
+﻿<head>
+    <title>Error</title> 
+<head>
 
 <div class=" col-sm-4 col-xs-12">
     <img src="..\..\Images\icone_erro1.png" class="img-fluid" alt="Responsive image">
@@ -19,8 +17,8 @@
         <div class="spoiler col-xs-11" style="display: none; text-align:left">
             <h2 class="text-primary"><b>Tire uma cópia desta tela e envie para o suporte.</b></h2>
 
-            <p><b>Mensagem:</b> @Model.Exception.Message</p>
-            <p><b>Stack:</b> @Model.Exception.StackTrace</p>
+            <p><b>Mensagem:</b>(mensagem) </p>
+            <p><b>Stack:</b>(exception)</p>
         </div><br/>
     </div>
 </div>

@@ -1,9 +1,5 @@
-﻿@model Cofin.RecebeMat.ModelsView.NotaFiscalNe
-
-@{
-    ViewBag.Title = "Nota Fiscal";
-}
-<head>
+﻿<head>
+    <title>Conciliar</title>
     <link href="~/Content/css/Conciliar.css" rel="stylesheet" />
 </head>
 
@@ -30,7 +26,7 @@
 
         <div class="row marginleft">
             <div class="col-lg-6">
-                <b> Nota de empenho: </b>@Html.DisplayFor(i => i.notaEmpenho.NumeroNe) <span class="hidden-xs"> </span>
+                <b> Nota de empenho: </b>@Html.DisplayFor(i => i.notaEmpenho.NumeroNE)<span class="hidden-xs"> </span>
             </div>
             <div class="col-lg-6">
                 <b>Emissão: </b>@Html.DisplayFor(i => i.notaEmpenho.Emissao)<span class="hidden-xs"> </span>
@@ -301,8 +297,7 @@
     </div>
 </body>
 
-@section scripts{
-    <!--<script type="text/javascript" src="~/Content/js/conciliar.js"></script>-->
+<!--<script type="text/javascript" src="~/Content/js/conciliar.js"></script>-->
 <script>
     var list = JSON.parse('@Html.Raw(ViewBag.Lista)');
 
@@ -372,4 +367,3 @@
     });
         });
 </script>
-}
